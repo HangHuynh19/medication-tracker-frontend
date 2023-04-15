@@ -1,0 +1,28 @@
+@font-face {
+  font-family: 'Sacramento';
+  src: url(./Sacramento-Regular.ttf) format('truetype');
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 4rem;
+  background-color: #23022e;
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.menu {
+  flex-grow: 1;
+  color: #cecfc7;
+}
+
+.logo {
+  font-family: 'Sacramento';
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 0.3rem;
+  flex-grow: 3;
+  color: #cecfc7;
+}

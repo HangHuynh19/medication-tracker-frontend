@@ -1,0 +1,46 @@
+.outerContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 80%;
+  background-color: #ada8b6;
+  border: 1px solid #ada8b6;
+  border-radius: 0.5rem;
+  margin: 1rem;
+}
+
+.timeDisplayContainer {
+  flex: 1;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background-color: #ada8b6;
+}
+
+.intakeContainer {
+  flex: 3;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background-color: #ada8b6;
+}
+
+ul {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-left: 2rem;
+  padding-right: 1rem;
+}
+
+li {
+  align-self: flex-start;
+  text-align: left;
+  padding-bottom: 0.5rem;
+}
+
+.checkedOrNotContainer {
+  flex: 1;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background-color: #ada8b6;
+}

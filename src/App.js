@@ -1,17 +1,15 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
 import Header from './components/Header/Header.js';
-import IntakeDetails from './components/IntakeDetails/IntakeDetails';
+import PrescriptionDisplay from './components/PrescriptionDisplay/PrescriptionDisplay';
 
-function App() {
+const App = () => {
   return (
     <div className='App'>
       <Header></Header>
-      <IntakeDetails></IntakeDetails>
-      <IntakeDetails></IntakeDetails>
-      <IntakeDetails></IntakeDetails>
+      <PrescriptionDisplay></PrescriptionDisplay>
     </div>
   );
-}
+};
 
 export default App;

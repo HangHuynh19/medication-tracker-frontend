@@ -1,25 +1,33 @@
 .outerContainer {
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  width: 80%;
+}
+
+.cardContainer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-areas: 'timeDisplayContainer intakeDetailsContainer intakeDetailsContainer checkedOrNotContainer';
   background-color: #ada8b6;
   border: 1px solid #ada8b6;
+  column-gap: 0.1rem;
+  padding: 0.1rem;
+  margin: 0.1rem;
+  justify-items: stretch;
+  align-items: center;
+  width: 90%;
+  border: 1px solid #ada8b6;
   border-radius: 0.5rem;
-  margin: 1rem;
 }
 
 .timeDisplayContainer {
-  flex: 1;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  grid-area: timeDisplayContainer;
   background-color: #ada8b6;
 }
 
-.intakeContainer {
-  flex: 3;
-  padding-left: 1rem;
-  padding-right: 1rem;
+.intakeDetailsContainer {
+  grid-area: intakeDetailsContainer;
   background-color: #ada8b6;
 }
 
@@ -39,8 +47,6 @@ li {
 }
 
 .checkedOrNotContainer {
-  flex: 1;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  grid-area: checkedOrNotContainer;
   background-color: #ada8b6;
 }

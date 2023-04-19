@@ -26,32 +26,6 @@ const PrescriptionDisplay = () => {
     fetchAllPrescriptions();
   }, []);
 
-  /* return (
-    <div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        prescriptions.map((prescription) => {
-          const issuedDate = new Date(prescription.issuedDate);
-          const expiryDate = new Date(prescription.expiryDate);
-
-          if (issuedDate <= currentDate && expiryDate >= currentDate) {
-            return (
-              <div key={prescription.id}>
-                <IntakeDetails
-                  medicineList={prescription.medicineList}
-                  expiryDate={expiryDate}
-                />
-              </div>
-            );
-          } else {
-            return null;
-          }
-        })
-      )}
-    </div>
-  ); */
-
   const getUniqueDates = (startDate, endDate) => {
     const dates = [];
     let currentDate = startDate;
@@ -89,16 +63,27 @@ const PrescriptionDisplay = () => {
           (p) =>
             new Date(p.issuedDate) <= date && new Date(p.expiryDate) >= date
         );
-        console.log(datePrescriptions);
+        const allMedicines = datePrescriptions.reduce((acc, prescription) => {
+          return acc.concat(prescription.medicineList);
+        }, []);
+        const groupedMedicines = allMedicines.reduce((acc, medicine) => {
+          const medicineId = medicine.id;
+          if (!acc[medicineId]) {
+            acc[medicineId] = {
+              ...medicine,
+              totalDose: parseInt(medicine.dosage),
+            };
+          } else {
+            acc[medicineId].totalDose += parseInt(medicine.dosage);
+          }
+          return acc;
+        }, {});
+        const medicinesArray = Object.values(groupedMedicines);
+
         return (
           <div key={date.toISOString()}>
             <p>{date.toDateString()}</p>
-            {datePrescriptions.map((prescription) => (
-              <IntakeDetails
-                key={prescription.id}
-                medicineList={prescription.medicineList}
-              />
-            ))}
+            <IntakeDetails medicineList={medicinesArray} />
           </div>
         );
       })}

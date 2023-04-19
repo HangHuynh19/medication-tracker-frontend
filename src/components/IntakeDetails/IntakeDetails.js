@@ -2,8 +2,7 @@ import React from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import './IntakeDetails.css';
 
-const IntakeDetails = ({ medicineList, issuedDate, expiryDate }) => {
-  console.log({ medicineList, issuedDate, expiryDate });
+const IntakeDetails = ({ medicineList }) => {
   const medicineByTime = medicineList.reduce((acc, medicine) => {
     medicine.intakeTime.forEach((time) => {
       if (!acc[time]) {
@@ -11,10 +10,20 @@ const IntakeDetails = ({ medicineList, issuedDate, expiryDate }) => {
       }
       acc[time].push(medicine);
     });
-    return acc;
+    const sorted = Object.keys(acc).sort((a, b) => {
+      const timeA = a.split(':');
+      const timeB = b.split(':');
+      return timeA[0] - timeB[0] || timeA[1] - timeB[1];
+    });
+    const sortedObj = {};
+    sorted.forEach((key) => {
+      sortedObj[key] = acc[key];
+    });
+    console.log(sortedObj);
+    return sortedObj;
   }, {});
 
-  const getDateArray = (end) => {
+  /*const getDateArray = (end) => {
     const dates = [];
     let currentDate = new Date();
 
@@ -52,6 +61,32 @@ const IntakeDetails = ({ medicineList, issuedDate, expiryDate }) => {
               </div>
             </div>
           ))}
+        </div>
+      ))}
+    </div>
+  );
+  }, {}); */
+
+  return (
+    <div className='outerContainer'>
+      {Object.keys(medicineByTime).map((time) => (
+        <div key={time} className='cardContainer'>
+          <div className='timeDisplayContainer'>
+            <p>{time}</p>
+          </div>
+          <div className='intakeDetailsContainer'>
+            <ul id='medicineList'>
+              {medicineByTime[time].map((medicine) => (
+                <li key={medicine.id}>
+                  {medicine.medicine.medicineName} - {medicine.dosage} tablets
+                  per time
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <CheckCircleIcon className='checkedOrNotContainer' />
+          </div>
         </div>
       ))}
     </div>

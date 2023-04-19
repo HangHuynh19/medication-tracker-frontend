@@ -26,7 +26,7 @@ const PrescriptionDisplay = () => {
     fetchAllPrescriptions();
   }, []);
 
-  return (
+  /* return (
     <div>
       {loading ? (
         <p>Loading...</p>
@@ -40,7 +40,6 @@ const PrescriptionDisplay = () => {
               <div key={prescription.id}>
                 <IntakeDetails
                   medicineList={prescription.medicineList}
-                  issuedDate={issuedDate}
                   expiryDate={expiryDate}
                 />
               </div>
@@ -50,6 +49,59 @@ const PrescriptionDisplay = () => {
           }
         })
       )}
+    </div>
+  ); */
+
+  const getUniqueDates = (startDate, endDate) => {
+    const dates = [];
+    let currentDate = startDate;
+    while (currentDate <= endDate) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dates;
+  };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  const filteredPrescriptions = prescriptions.filter(
+    (prescription) =>
+      new Date(prescription.issuedDate) <= currentDate &&
+      new Date(prescription.expiryDate) >= currentDate
+  );
+
+  const uniqueDates = getUniqueDates(
+    currentDate,
+    new Date(
+      Math.max.apply(
+        null,
+        filteredPrescriptions.map((p) => new Date(p.expiryDate))
+      )
+    )
+  );
+
+  return (
+    <div>
+      {uniqueDates.map((date) => {
+        const datePrescriptions = filteredPrescriptions.filter(
+          (p) =>
+            new Date(p.issuedDate) <= date && new Date(p.expiryDate) >= date
+        );
+        console.log(datePrescriptions);
+        return (
+          <div key={date.toISOString()}>
+            <p>{date.toDateString()}</p>
+            {datePrescriptions.map((prescription) => (
+              <IntakeDetails
+                key={prescription.id}
+                medicineList={prescription.medicineList}
+              />
+            ))}
+          </div>
+        );
+      })}
     </div>
   );
 };

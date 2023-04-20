@@ -1,57 +1,117 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
 import './IntakeDetails.css';
 
-const IntakeDetails = ({ medicineList, issuedDate, expiryDate }) => {
-  console.log({ medicineList, issuedDate, expiryDate });
-  const medicineByTime = medicineList.reduce((acc, medicine) => {
-    medicine.intakeTime.forEach((time) => {
-      if (!acc[time]) {
-        acc[time] = [];
-      }
-      acc[time].push(medicine);
-    });
-    return acc;
-  }, {});
+const IntakeDetails = ({ medicineList, date }) => {
+  const [medicineByTime, setMedicineByTime] = useState({});
+  const [dataFromStorage, setDataFromStorage] = useState(null);
 
-  const getDateArray = (end) => {
-    const dates = [];
-    let currentDate = new Date();
-
-    while (currentDate <= end) {
-      dates.push(currentDate);
-      currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
+  useEffect(() => {
+    if (
+      localStorage.getItem(
+        `medicineListByDateAndTime ${date.toISOString().split('T')[0]}`
+      )
+    ) {
+      setDataFromStorage(
+        JSON.parse(
+          localStorage.getItem(
+            `medicineListByDateAndTime ${date.toISOString().split('T')[0]}`
+          )
+        )
+      );
     }
-    return dates;
+  }, [medicineByTime, date]);
+
+  useEffect(() => {
+    let initialMedicineByTime = medicineList.reduce((acc, medicine) => {
+      medicine.intakeTime.forEach((time) => {
+        if (!acc[time]) {
+          acc[time] = [];
+        }
+        acc[time].push({
+          ...medicine,
+          checked: false,
+          totalDose: medicine.totalDose,
+          uniqueIdentifier: `${medicine.id}-${time}-${
+            date.toISOString().split('T')[0]
+          }`,
+        });
+      });
+      const sorted = Object.keys(acc).sort((a, b) => {
+        const timeA = a.split(':');
+        const timeB = b.split(':');
+        return timeA[0] - timeB[0] || timeA[1] - timeB[1];
+      });
+      const sortedObj = {};
+      sorted.forEach((key) => {
+        sortedObj[key] = acc[key];
+      });
+
+      return sortedObj;
+    }, {});
+
+    setMedicineByTime(initialMedicineByTime);
+  }, [medicineList, date]);
+
+  const handleCheck = (time, uniqueIdentifier) => {
+    const updatedMedicineByTime = { ...(dataFromStorage || medicineByTime) };
+    updatedMedicineByTime[time] = updatedMedicineByTime[time].map(
+      (medicine) => {
+        if (medicine.uniqueIdentifier === uniqueIdentifier) {
+          return { ...medicine, checked: !medicine.checked };
+        }
+        return medicine;
+      }
+    );
+
+    localStorage.setItem(
+      `medicineListByDateAndTime ${date.toISOString().split('T')[0]}`,
+      JSON.stringify(updatedMedicineByTime)
+    );
+    console.log('UPDATED', updatedMedicineByTime);
+    setMedicineByTime(updatedMedicineByTime);
   };
-
-  const dateArray = getDateArray(expiryDate);
-
+  //localStorage.clear();
+  const dataSrc = dataFromStorage ?? medicineByTime;
   return (
     <div className='outerContainer'>
-      {dateArray.map((date, index) => (
-        <div key={index}>
-          <p>{new Date(date).toLocaleDateString()}</p>
-          {Object.keys(medicineByTime).map((time) => (
-            <div key={time} className='cardContainer'>
-              <div className='timeDisplayContainer'>
-                <p>{time}</p>
+      {Object.keys(dataSrc).map((time) => (
+        <div key={`${time} + ${date.toISOString()}`} className='cardContainer'>
+          <div className='timeDisplayContainer'>
+            <p>{time}</p>
+          </div>
+          <div className='intakeDetailsContainer'>
+            <ul id='medicineList'>
+              {dataSrc[time].map((medicine) => (
+                <li key={medicine.id}>
+                  {medicine.medicine.medicineName} - {medicine.totalDose}{' '}
+                  tablets per time
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            {dataSrc[time].map((medicine) => (
+              <div key={medicine.uniqueIdentifier}>
+                {medicine.checked ? (
+                  <CheckCircleIcon
+                    className='checkedOrNotContainer'
+                    onClick={() => {
+                      handleCheck(time, medicine.uniqueIdentifier);
+                    }}
+                  />
+                ) : (
+                  <CircleOutlinedIcon
+                    className='checkedOrNotContainer'
+                    onClick={() => {
+                      handleCheck(time, medicine.uniqueIdentifier);
+                    }}
+                  />
+                )}
               </div>
-              <div className='intakeDetailsContainer'>
-                <ul id='medicineList'>
-                  {medicineByTime[time].map((medicine) => (
-                    <li key={medicine.id}>
-                      {medicine.medicine.medicineName} - {medicine.dosage}{' '}
-                      tablets per time
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <CheckCircleIcon className='checkedOrNotContainer' />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ))}
     </div>

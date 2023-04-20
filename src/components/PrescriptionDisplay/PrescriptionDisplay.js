@@ -83,7 +83,7 @@ const PrescriptionDisplay = () => {
         return (
           <div key={date.toISOString()}>
             <p>{date.toDateString()}</p>
-            <IntakeDetails medicineList={medicinesArray} />
+            <IntakeDetails medicineList={medicinesArray} date={date} />
           </div>
         );
       })}
